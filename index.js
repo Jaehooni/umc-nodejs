@@ -1,12 +1,19 @@
-import express from 'express'          // ES6
+import express from 'express';
+import { tempRouter } from './src/routes/temp.route.js';
 
-const app = express()
-const port = 3000
+const app = express();
+const port = 3000;
 
-app.get('/', function (req, res) {
-    res.send('Hello World')
-})
+app.use('/temp', tempRouter);
+
+app.use((err, req, res, next) => {
+    res.locals.message = err.message;   
+    // 개발환경이면 에러를 출력하고 아니면 출력하지 않기
+    res.locals.error = process.env.NODE_ENV !== 'production' ? err : {}; 
+    res.status(err.data.status).send(response(err.data));
+});
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
-})
+});
+
